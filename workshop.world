@@ -1,0 +1,849 @@
+<?xml version="1.0" ?>
+<sdf version="1.6">
+  <world name="nice_workshop_world">
+
+    <!-- 기본 바닥 & 태양 -->
+    <include>
+      <uri>model://ground_plane</uri>
+    </include>
+
+    <include>
+      <uri>model://sun</uri>
+    </include>
+
+    <!-- 작업장 위쪽에 조명 하나 -->
+    <light name="workshop_light" type="point">
+      <pose>3 0 4 0 0 0</pose>
+      <diffuse>1 1 1 1</diffuse>
+      <specular>0.5 0.5 0.5 1</specular>
+      <attenuation>
+        <range>20</range>
+        <constant>0.5</constant>
+        <linear>0.01</linear>
+        <quadratic>0.001</quadratic>
+      </attenuation>
+      <cast_shadows>true</cast_shadows>
+    </light>
+
+    <!-- 메인 건물 -->
+    <model name="nice_workshop_building">
+      <static>true</static>
+
+      <!-- === 전체 건물 바닥 (20 x 15) === -->
+      <link name="floor_base">
+        <pose>0 0 -0.05 0 0 0</pose>
+        <collision name="collision">
+          <geometry>
+            <box>
+              <size>20 15 0.1</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>20 15 0.1</size>
+            </box>
+          </geometry>
+          <!-- 약간 짙은 콘크리트 느낌 -->
+          <material>
+            <script>
+              <uri>file://media/materials/scripts/gazebo.material</uri>
+              <name>Gazebo/DarkGrey</name>
+            </script>
+          </material>
+        </visual>
+      </link>
+
+      <!-- === 각 공간별 바닥 패턴 (살짝 올려서 색만 다르게) === -->
+      <!-- 작업장: 오른쪽 전체 x:0~10, y:-7.5~7.5 -->
+      <link name="floor_workshop">
+        <pose>5 0 0 0 0 0</pose>
+        <collision name="collision">
+          <geometry>
+            <box>
+              <size>10 15 0.02</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>10 15 0.02</size>
+            </box>
+          </geometry>
+          <material>
+            <!-- 살짝 푸른빛 나는 공장 바닥 -->
+            <ambient>0.3 0.4 0.45 1</ambient>
+            <diffuse>0.35 0.45 0.5 1</diffuse>
+          </material>
+        </visual>
+      </link>
+
+      <!-- 창고: x:-10~-3, y:1~7.5 -->
+      <link name="floor_warehouse">
+        <pose>-6.5 4.25 0 0 0 0</pose>
+        <collision name="collision">
+          <geometry>
+            <box>
+              <size>7 6.5 0.02</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>7 6.5 0.02</size>
+            </box>
+          </geometry>
+          <material>
+            <!-- 녹색 계열 (창고 느낌) -->
+            <ambient>0.25 0.4 0.25 1</ambient>
+            <diffuse>0.3 0.5 0.3 1</diffuse>
+          </material>
+        </visual>
+      </link>
+
+      <!-- 사무실: x:-10~-3, y:-3~1 -->
+      <link name="floor_office">
+        <pose>-6.5 -1 0 0 0 0</pose>
+        <collision name="collision">
+          <geometry>
+            <box>
+              <size>7 4 0.02</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>7 4 0.02</size>
+            </box>
+          </geometry>
+          <material>
+            <!-- 약간 목재/카펫 느낌 -->
+            <ambient>0.45 0.35 0.25 1</ambient>
+            <diffuse>0.55 0.45 0.35 1</diffuse>
+          </material>
+        </visual>
+      </link>
+
+      <!-- 휴게실: x:-10~-3, y:-7.5~-3 -->
+      <link name="floor_breakroom">
+        <pose>-6.5 -5.25 0 0 0 0</pose>
+        <collision name="collision">
+          <geometry>
+            <box>
+              <size>7 4.5 0.02</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>7 4.5 0.02</size>
+            </box>
+          </geometry>
+          <material>
+            <!-- 따뜻한 색 -->
+            <ambient>0.5 0.4 0.4 1</ambient>
+            <diffuse>0.6 0.5 0.5 1</diffuse>
+          </material>
+        </visual>
+      </link>
+
+      <!-- 화장실: x:-3~0, y:1~4 -->
+      <link name="floor_restroom">
+        <pose>-1.5 2.5 0 0 0 0</pose>
+        <collision name="collision">
+          <geometry>
+            <box>
+              <size>3 3 0.02</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>3 3 0.02</size>
+            </box>
+          </geometry>
+          <material>
+            <!-- 밝은 타일 느낌 -->
+            <ambient>0.8 0.8 0.85 1</ambient>
+            <diffuse>0.9 0.9 0.95 1</diffuse>
+          </material>
+        </visual>
+      </link>
+
+      <!-- === 외벽 (높이 3m) / 출입구를 위해 중앙 부분은 띄워줌 === -->
+
+      <!-- 북쪽 벽: 출입문(폭 3m) 가운데에 비움 -->
+      <link name="wall_north_left">
+        <pose>-5.5 7.45 1.5 0 0 0</pose>
+        <collision name="collision">
+          <geometry>
+            <box>
+              <size>9 0.1 3</size> <!-- x= -10~-1 -->
+            </box>
+          </geometry>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>9 0.1 3</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>0.9 0.9 0.95 1</ambient>
+            <diffuse>0.9 0.9 0.95 1</diffuse>
+          </material>
+        </visual>
+      </link>
+
+      <link name="wall_north_right">
+        <pose>5.5 7.45 1.5 0 0 0</pose>
+        <collision name="collision">
+          <geometry>
+            <box>
+              <size>9 0.1 3</size> <!-- x=1~10 -->
+            </box>
+          </geometry>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>9 0.1 3</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>0.9 0.9 0.95 1</ambient>
+          </material>
+        </visual>
+      </link>
+
+      <!-- 남쪽 벽 (전체) -->
+      <link name="wall_south">
+        <pose>0 -7.45 1.5 0 0 0</pose>
+        <collision name="collision">
+          <geometry>
+            <box>
+              <size>20 0.1 3</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>20 0.1 3</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>0.9 0.9 0.95 1</ambient>
+          </material>
+        </visual>
+      </link>
+
+      <!-- 동쪽 벽 (전체) -->
+      <link name="wall_east">
+        <pose>10 0 1.5 0 0 0</pose>
+        <collision name="collision">
+          <geometry>
+            <box>
+              <size>0.1 15 3</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>0.1 15 3</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>0.9 0.9 0.95 1</ambient>
+          </material>
+        </visual>
+      </link>
+
+      <!-- 서쪽 벽 (전체) -->
+      <link name="wall_west">
+        <pose>-10 0 1.5 0 0 0</pose>
+        <collision name="collision">
+          <geometry>
+            <box>
+              <size>0.1 15 3</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>0.1 15 3</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>0.9 0.9 0.95 1</ambient>
+          </material>
+        </visual>
+      </link>
+
+      <!-- === 내부 벽 (문틈 남겨서 동선 표현) === -->
+      <!-- 작업장과 왼쪽 구역을 가르는 중앙 벽 (중앙 부분에 문) -->
+      <!-- 위쪽 구간 -->
+      <link name="inner_wall_center_top">
+        <pose>0 4.25 1.5 0 0 0</pose>
+        <collision name="collision">
+          <geometry>
+            <box>
+              <size>0.1 6.5 3</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>0.1 6.5 3</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>0.85 0.88 0.95 1</ambient>
+          </material>
+        </visual>
+      </link>
+
+      <!-- 아래쪽 구간 -->
+      <link name="inner_wall_center_bottom">
+        <pose>0 -4.25 1.5 0 0 0</pose>
+        <collision name="collision">
+          <geometry>
+            <box>
+              <size>0.1 6.5 3</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>0.1 6.5 3</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>0.85 0.88 0.95 1</ambient>
+          </material>
+        </visual>
+      </link>
+
+      <!-- 왼쪽 큰 구역 세로 분할(창고/사무실/휴게실) -->
+      <!-- 창고 / 사무실 경계: y=1, 문 중앙에 비움 -->
+      <link name="wall_warehouse_office_left">
+        <pose>-9 1 1.5 0 0 0</pose>
+        <collision name="collision">
+          <geometry>
+            <box>
+              <size>2 0.1 3</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>2 0.1 3</size>
+            </box>
+          </geometry>
+        </visual>
+      </link>
+
+      <link name="wall_warehouse_office_right">
+        <pose>-4 1 1.5 0 0 0</pose>
+        <collision name="collision">
+          <geometry>
+            <box>
+              <size>2 0.1 3</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>2 0.1 3</size>
+            </box>
+          </geometry>
+        </visual>
+      </link>
+
+      <!-- 사무실 / 휴게실 경계: y=-3 -->
+      <link name="wall_office_break_left">
+        <pose>-9 -3 1.5 0 0 0</pose>
+        <collision name="collision">
+          <geometry>
+            <box>
+              <size>2 0.1 3</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>2 0.1 3</size>
+            </box>
+          </geometry>
+        </visual>
+      </link>
+
+      <link name="wall_office_break_right">
+        <pose>-4 -3 1.5 0 0 0</pose>
+        <collision name="collision">
+          <geometry>
+            <box>
+              <size>2 0.1 3</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>2 0.1 3</size>
+            </box>
+          </geometry>
+        </visual>
+      </link>
+
+      <!-- 화장실 구역 벽 (x=-3~0, y:1~4) -->
+      <link name="wall_restroom_back">
+        <pose>-1.5 4 1.5 0 0 0</pose>
+        <collision name="collision">
+          <geometry>
+            <box>
+              <size>3 0.1 3</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>3 0.1 3</size>
+            </box>
+          </geometry>
+        </visual>
+      </link>
+
+      <link name="wall_restroom_side_left">
+        <pose>-3 2.5 1.5 0 0 0</pose>
+        <collision name="collision">
+          <geometry>
+            <box>
+              <size>0.1 3 3</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>0.1 3 3</size>
+            </box>
+          </geometry>
+        </visual>
+      </link>
+
+      <!-- 작업장 쪽으로 열려 있는 앞쪽은 문 없는 오픈 구조 -->
+
+      <!-- ===== 창고 내부: 선반 + 박스들 정렬 ===== -->
+      <link name="warehouse_rack_1">
+        <pose>-8 5.5 1 0 0 0</pose>
+        <collision name="collision">
+          <geometry>
+            <box>
+              <size>4 0.4 2</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>4 0.4 2</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>0.4 0.4 0.45 1</ambient>
+          </material>
+        </visual>
+      </link>
+
+      <!-- 박스 여러 개 -->
+      <link name="warehouse_box_1">
+        <pose>-8.5 6.3 0.5 0 0 0</pose>
+        <collision name="collision">
+          <geometry>
+            <box>
+              <size>0.9 0.9 1</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>0.9 0.9 1</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>0.7 0.55 0.4 1</ambient>
+          </material>
+        </visual>
+      </link>
+
+      <link name="warehouse_box_2">
+        <pose>-7.3 6.3 0.5 0 0 0</pose>
+        <collision name="collision">
+          <geometry>
+            <box>
+              <size>0.9 0.9 1</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>0.9 0.9 1</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>0.75 0.6 0.45 1</ambient>
+          </material>
+        </visual>
+      </link>
+
+      <link name="warehouse_box_3">
+        <pose>-6.1 6.3 0.5 0 0 0</pose>
+        <collision name="collision">
+          <geometry>
+            <box>
+              <size>0.9 0.9 1</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>0.9 0.9 1</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>0.65 0.5 0.35 1</ambient>
+          </material>
+        </visual>
+      </link>
+
+      <!-- ===== 사무실: 책상 + 벽에 칠판(화이트보드 느낌) ===== -->
+      <link name="office_table">
+        <pose>-7 -1 0.75 0 0 0</pose>
+        <collision name="collision">
+          <geometry>
+            <box>
+              <size>2 1 0.5</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>2 1 0.5</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>0.6 0.6 0.7 1</ambient>
+          </material>
+        </visual>
+      </link>
+
+      <link name="office_board">
+        <pose>-9.9 -1 1.4 0 0 0</pose>
+        <collision name="collision">
+          <geometry>
+            <box>
+              <size>0.02 2 1</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>0.02 2 1</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>0.9 0.95 0.95 1</ambient>
+            <diffuse>0.9 0.95 0.95 1</diffuse>
+          </material>
+        </visual>
+      </link>
+
+      <!-- ===== 휴게실: 테이블 + 자판기 느낌 박스 ===== -->
+      <link name="breakroom_table">
+        <pose>-7 -5.3 0.6 0 0 0</pose>
+        <collision name="collision">
+          <geometry>
+            <box>
+              <size>1.7 1.7 0.4</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>1.7 1.7 0.4</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>0.7 0.6 0.6 1</ambient>
+          </material>
+        </visual>
+      </link>
+
+      <link name="breakroom_vending">
+        <pose>-4.3 -5.2 1.0 0 0 0</pose>
+        <collision name="collision">
+          <geometry>
+            <box>
+              <size>0.8 0.5 2.0</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>0.8 0.5 2.0</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>0.3 0.4 0.7 1</ambient>
+            <diffuse>0.3 0.45 0.8 1</diffuse>
+          </material>
+        </visual>
+      </link>
+
+      <!-- ===== 화장실: 세면대 + 칸막이 박스 ===== -->
+      <link name="restroom_sink">
+        <pose>-2.5 2.1 0.5 0 0 0</pose>
+        <collision name="collision">
+          <geometry>
+            <box>
+              <size>0.8 0.4 0.5</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>0.8 0.4 0.5</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>0.85 0.85 0.95 1</ambient>
+          </material>
+        </visual>
+      </link>
+
+      <link name="restroom_partition">
+        <pose>-1.2 2.5 1.1 0 0 0</pose>
+        <collision name="collision">
+          <geometry>
+            <box>
+              <size>0.05 1.4 2.2</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>0.05 1.4 2.2</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>0.8 0.8 0.85 1</ambient>
+          </material>
+        </visual>
+      </link>
+
+      <!-- ===== 작업장: 작업대, 기계, 파렛트 구역 ===== -->
+
+      <!-- 작업대 (롱 테이블) -->
+      <link name="workbench_1">
+        <pose>2 4 0.8 0 0 0</pose>
+        <collision name="collision">
+          <geometry>
+            <box>
+              <size>3 1 0.6</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>3 1 0.6</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>0.5 0.5 0.55 1</ambient>
+          </material>
+        </visual>
+      </link>
+
+      <link name="workbench_2">
+        <pose>2 0 0.8 0 0 0</pose>
+        <collision name="collision">
+          <geometry>
+            <box>
+              <size>3 1 0.6</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>3 1 0.6</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>0.5 0.5 0.55 1</ambient>
+          </material>
+        </visual>
+      </link>
+
+      <!-- 공장 기계 느낌: 낮은 박스 위에 실린더 -->
+      <link name="machine_1_base">
+        <pose>6 3 0.4 0 0 0</pose>
+        <collision name="collision">
+          <geometry>
+            <box>
+              <size>1.2 1.2 0.8</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>1.2 1.2 0.8</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>0.3 0.35 0.4 1</ambient>
+          </material>
+        </visual>
+      </link>
+
+      <link name="machine_1_cylinder">
+        <pose>6 3 1.2 0 0 0</pose>
+        <collision name="collision">
+          <geometry>
+            <cylinder>
+              <radius>0.4</radius>
+              <length>0.6</length>
+            </cylinder>
+          </geometry>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <cylinder>
+              <radius>0.4</radius>
+              <length>0.6</length>
+            </cylinder>
+          </geometry>
+          <material>
+            <ambient>0.7 0.2 0.2 1</ambient>
+          </material>
+        </visual>
+      </link>
+
+      <!-- 파렛트 존: 노란 띠 + 박스 -->
+      <link name="pallet_zone_mark">
+        <pose>7 -3 0.01 0 0 0</pose>
+        <collision name="collision">
+          <geometry>
+            <box>
+              <size>4 3 0.02</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>4 3 0.02</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>0.8 0.7 0.2 0.6</ambient>
+            <diffuse>0.9 0.8 0.25 0.6</diffuse>
+          </material>
+        </visual>
+      </link>
+
+      <link name="pallet_box_1">
+        <pose>6.5 -3.5 0.5 0 0 0</pose>
+        <collision name="collision">
+          <geometry>
+            <box>
+              <size>1 1 1</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>1 1 1</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>0.7 0.55 0.4 1</ambient>
+          </material>
+        </visual>
+      </link>
+
+      <link name="pallet_box_2">
+        <pose>7.8 -2.7 0.5 0 0 0</pose>
+        <collision name="collision">
+          <geometry>
+            <box>
+              <size>1 1 1</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>1 1 1</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>0.65 0.5 0.35 1</ambient>
+          </material>
+        </visual>
+      </link>
+
+      <!-- 안전 통로 표시: 작업장 중앙에 흰색 선 -->
+      <link name="safety_line">
+        <pose>5 0 0.02 0 0 0</pose>
+        <collision name="collision">
+          <geometry>
+            <box>
+              <size>0.2 15 0.02</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>0.2 15 0.02</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>0.95 0.95 0.95 1</ambient>
+          </material>
+        </visual>
+      </link>
+
+    </model>
+
+  </world>
+</sdf>
+
